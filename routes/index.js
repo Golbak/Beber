@@ -9,7 +9,11 @@ var juegos=[	{"juego":"El círculo de la muerte" },
 
 /* GET home page. */
 router.get('/', function(req, res) {
-  res.render('index', { title: 'Express' ,juegos : juegos});
+	res.render('index', { title: 'Express' ,juegos : juegos});
+});
+
+router.get('/normas', function(req, res) {
+	res.render(('index', { title: 'Express' ,juegos : juegos});
 });
 
 module.exports = router;
