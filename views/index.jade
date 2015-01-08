@@ -7,4 +7,5 @@ block content
 	if(juegos)
 		ul
 			each u in juegos
-				li #{u.juego}
+				li
+					a(href="#{u.juego}") #{u.juego}
