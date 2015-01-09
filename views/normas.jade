@@ -2,7 +2,10 @@ extends layout
 
 block content
 	h1= "NORMAS"
-	p. #normas
+	p #{normas}
 
 	h1= "MODOS"
-	p. #modos
+	p #{modos}
+
+	input(type="button", value="Volver", onClick="window.location.href='/'")
+	input(type="button", value="Jugar", onClick="window.location.href='/jugar?juego=#{juego}'")
