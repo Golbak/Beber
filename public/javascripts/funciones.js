@@ -42,3 +42,4 @@ function Jugar()
 	alert('Presionando Jugar');
 	//$.get('/juego',#{juego});		//Pido el juego y le paso que juego quiero
 }
+
