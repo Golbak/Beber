@@ -1,4 +1,8 @@
-
+var carta=[];                                                                 //Mi variable para guardar las cartas
+var esp_x=10;
+var esp_y=10;
+var W=253;
+var H=418;
 
 window.onload = function(){
     //Recibimos el elemento canvas
@@ -20,9 +24,13 @@ window.onload = function(){
       //Accedo al contexto de '2d' de este canvas, necesario para dibujar
       var contexto = elemento.getContext('2d');
       if (contexto) {
-        var img = new Image();
-        img.src = "/images/carta.jpg";
-        contexto.drawImage(img, 0, 0); 
+        var img1 = new Image();
+        var img2 = new Image();
+        var numero=parseInt(Math.random()*2+1);
+        img1.src = String('/images/carta'+numero+'.jpg');
+        contexto.drawImage(img1, esp_x, esp_y, W, H); 
+        img2.src = '/images/cartavacia.jpg';
+        contexto.drawImage(img2, W+2*esp_x, H/2+esp_y, W/2, H/2); 
       }
    }
 }

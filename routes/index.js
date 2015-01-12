@@ -1,12 +1,13 @@
 var express = require('express');
 var router = express.Router();
+var fs = require('fs');
 
 //Mi json que contendra el nombre de los juegos sus normas y sus modos
-var juegos=[	{"juego":"El círculo de la muerte" , 	"normas":"Me besas el cipote", 		"modos":"1" },
-				{"juego":"Mayor o menor" , 				"normas":"Me besas el pie", 		"modos":"1"},
-				{"juego":"Piramide" , 					"normas":"Puto vago del joserra", 	"modos":"1"},
-				{"juego":"Autobús" , 					"normas":"pfff", 					"modos":"1"},
-				{"juego":"Escalera" , 					"normas":"Ahora vas y lo cuentas", 	"modos":"1"} ];
+var juegos=[	{"juego":"El círculo de la muerte" , 	"normas":fs.readFileSync('public/documents/El círculo de la muerte.txt'), 	"modos":"1"},
+				{"juego":"Mayor o menor" , 				"normas":fs.readFileSync('public/documents/Mayor o menor.txt'), 			"modos":"1"},
+				{"juego":"Piramide" , 					"normas":fs.readFileSync('public/documents/Piramide.txt'), 					"modos":"1"},
+				{"juego":"Autobús" , 					"normas":fs.readFileSync('public/documents/Autobús.txt'), 					"modos":"1"},
+				{"juego":"Escalera" , 					"normas":fs.readFileSync('public/documents/Escalera.txt'), 					"modos":"1"}];
 
 /* GET home page. */
 
