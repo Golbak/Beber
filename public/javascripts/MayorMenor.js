@@ -109,7 +109,7 @@ function proceso(flag,canvas,contexto)
 //Funcion para dibujar los botones
 function DibujarBotones(contexto)
 {
-  for(var i=0,tamano=imgb.length,tamano;i<tamano;i++)
+  for(var i=0,tamano=imgb.length;i<tamano;i++)
     {
       contexto.drawImage(imgb[i],W+2*esp_x,esp_y+(H/6-esp_y)*(i),W*3/4,H/6-esp_y);          //Dibujo mi nuevo boton
     } 
