@@ -1,5 +1,7 @@
 //Variable que almacena las cartas que han salido
 var cartas=[];
+
+//Posiciones de mis cartas en la foto
 var posicioncarta=[{"x":0,"y":0},{"x":1,"y":0},{"x":0,"y":1},{"x":1,"y":1},{"x":0,"y":2},{"x":1,"y":2},{"x":0,"y":3},{"x":1,"y":3},{"x":0,"y":4},{"x":1,"y":4},{"x":9,"y":4},{"x":8,"y":5},{"x":9,"y":5},
                   {"x":2,"y":0},{"x":3,"y":0},{"x":2,"y":1},{"x":3,"y":1},{"x":2,"y":2},{"x":3,"y":2},{"x":2,"y":3},{"x":3,"y":3},{"x":2,"y":4},{"x":3,"y":4},{"x":9,"y":1},{"x":8,"y":2},{"x":9,"y":2},
                   {"x":4,"y":0},{"x":5,"y":0},{"x":4,"y":1},{"x":5,"y":1},{"x":4,"y":2},{"x":5,"y":2},{"x":4,"y":3},{"x":5,"y":3},{"x":4,"y":4},{"x":5,"y":4},{"x":8,"y":0},{"x":9,"y":0},{"x":8,"y":1},
@@ -18,10 +20,6 @@ var sx=75;
 var sy=60;
 var sW=146;
 var sH=196;
-
-//Recibimos el elemento canvas   
-var canvas; 
-var contexto;
 
 //Varianle para las imagenes de las cartas
 var imgc = new Image();
@@ -42,7 +40,7 @@ function getMousePos(canvas, evt) {
 
 //Funcion para comprobar si la carta ya ha salido
 function comprobar(carta) {
-  for(var i=0;i<cartas.length;i++)                                                          //Recorro mis cartas salidas
+  for(var i=0,tamano=cartas.length;i<tamano;i++)                                                          //Recorro mis cartas salidas
   {
     if(carta==cartas[i])                                                                    //Si hay una que es igual
     {
@@ -53,13 +51,13 @@ function comprobar(carta) {
 }
 
 //Funcion que carga la UI
-function recargarUI()
+function recargarUI(canvas,contexto)
 {
-  if (canvas && canvas.getContext) {
+  if (canvas && contexto) {
     var numero=cartas[cartas.length-1];                                                     //En la ultima posicion tengo la carta actual
-    DibujarCartaGrande(posicioncarta[numero]["x"],posicioncarta[numero]["y"]);              //Dibujo mi carta grande que acaba de salir
+    DibujarCartaGrande(posicioncarta[numero]["x"],posicioncarta[numero]["y"],contexto);     //Dibujo mi carta grande que acaba de salir
     numero=cartas[cartas.length-2];                                                         //En la penultima posicion tengo la carta anterior
-    DibujarCartaPequena(posicioncarta[numero]["x"],posicioncarta[numero]["y"]);             //Dibujo mi carta pequeña de la ronda anterior
+    DibujarCartaPequena(posicioncarta[numero]["x"],posicioncarta[numero]["y"],contexto);    //Dibujo mi carta pequeña de la ronda anterior
     }
 }
 
@@ -85,10 +83,10 @@ function Beber(flag)
 }
 
 //Funcion proceso
-function proceso(flag)
+function proceso(flag,canvas,contexto)
 {
   obtenerCarta();                                                                           //Pido mi carta, se encarga de meterla en el mazo
-  recargarUI();                                                                             //Recargo la ui, que pondra en el mazo la penultima carta y en grande la ultima
+  recargarUI(canvas,contexto);                                                              //Recargo la ui, que pondra en el mazo la penultima carta y en grande la ultima
   var actual=cartas[cartas.length-1];                                                       //Mi actual esta al final del array
   var anterior=cartas[cartas.length-2];                                                     //Mi anterior esta en la antepenultima
   
@@ -109,73 +107,68 @@ function proceso(flag)
 }
 
 //Funcion para dibujar los botones
-function DibujarBotones(inicial,incremento)
+function DibujarBotones(contexto)
 {
-  for(var i=0;i<imgb.length;i++)
+  for(var i=0,tamano=imgb.length;i<tamano;i++)
     {
-      contexto.drawImage(imgb[i],W+2*esp_x,esp_y+(H/6-esp_y)*(i),W*3/4,H/6-esp_y);        //Dibujo mi nuevo boton
+      contexto.drawImage(imgb[i],W+2*esp_x,esp_y+(H/6-esp_y)*(i),W*3/4,H/6-esp_y);          //Dibujo mi nuevo boton
     } 
 }
 
 //Funcion Dibujar Carta Grande
-function DibujarCartaGrande(x,y)
+function DibujarCartaGrande(x,y,contexto)
 {
-  contexto.drawImage(imgc ,sx+sW*x, sy+sH*y, sW, sH, esp_x, esp_y, W, H);                   //Dibujo la imagen de mi carta
+  contexto.drawImage(imgc , sx+sW*x, sy+sH*y, sW, sH, esp_x, esp_y, W, H);                   //Dibujo la imagen de mi carta
 }
 
 //Funcion Dibujar Carta Pequeña
-function DibujarCartaPequena(x,y)
+function DibujarCartaPequena(x,y,contexto)
 {
-  contexto.drawImage(imgc ,sx+sW*x,sy+sH*y,sW,sH, W+2*esp_x, H/2+esp_y, W/2, H/2);          //Dibujo la imagen de mi carta
+  contexto.drawImage(imgc , sx+sW*x, sy+sH*y, sW, sH, W+2*esp_x, H/2+esp_y, W/2, H/2);       //Dibujo la imagen de mi carta
 }
 //Funcion IniciarUI
-function iniciarUI()
+function iniciarUI(canvas,contexto)
 {
   //Reinicio el mazo
   cartas=[];
   //Comprobación sobre si encontramos un elemento
   //y podemos extraer su contexto con getContext(), que indica compatibilidad con canvas
-  if (canvas && canvas.getContext) {
-    //Accedo al contexto de '2d' de este canvas, necesario para dibujar
-
-    if (contexto) {
+  if (canvas && contexto) {
       //Obtengo mi primera carta
       obtenerCarta();                                                                        //Obtengo la nueva carta 
       var numero=cartas[cartas.length-1];                                                    //En la ultima posicion tengo la carta actual     
-      DibujarCartaGrande(posicioncarta[numero]["x"],posicioncarta[numero]["y"]);             //Dibujo mi nueva carta
+      DibujarCartaGrande(posicioncarta[numero]["x"],posicioncarta[numero]["y"],contexto);    //Dibujo mi nueva carta
       //Pongo una carta vacia en la anterior
-      DibujarCartaPequena(12,6);                                                             //Dibujo la imagen de mi carta
+      DibujarCartaPequena(12,6,contexto);                                                    //Dibujo la imagen de mi carta
       //Dibujo los tres botones
-      DibujarBotones();                                                                      //Uso la funcion dibujar botones para dibujar los botones
-    }
+      DibujarBotones(contexto);                                                                      //Uso la funcion dibujar botones para dibujar los botones
   }
 }
 
 //Cuando cargo la pagina empiezo el juego
 window.onload = function(){
   //Obtengo mediante mi id el Canvas
-  canvas = document.getElementById('micanvas');
+  var canvas = document.getElementById('micanvas');
   //Obtengo contexto mediante mi canvas
-  contexto = canvas.getContext('2d');
+  var contexto = canvas.getContext('2d');
   //Inicio la UI
-  iniciarUI();
+  iniciarUI(canvas,contexto);
   //Añadimos un addEventListener al canvas, para reconocer el click
   canvas.addEventListener("click", function (evt){  
-  //Obtengo la posicion del ratón
-  var mousePos = getMousePos(canvas, evt);
+    //Obtengo la posicion del ratón
+    var mousePos = getMousePos(canvas, evt);
     //Si ya he llegado al tope reinicio el juego, sino sigo con el juego
     if(cartas.length>=numcartas)
     {
-      alert('Reinicio de mazo');
-      iniciarUI();
+      iniciarUI(canvas,contexto);
     }else{
       //Si mi raton esta encima de unos de los botones
       if(mousePos.x>(W+2*esp_x) && mousePos.x<(W*7/4+2*esp_x) && mousePos.y>(esp_y) && mousePos.y<(H/6)){
-        proceso('mayor');
+        proceso('mayor',canvas,contexto);
       }else if(mousePos.x>(W+2*esp_x) && mousePos.x<(W*7/4+2*esp_x) && mousePos.y>(H/6) && mousePos.y<(H/3-esp_y)){
-        proceso('igual');
+        proceso('igual',canvas,contexto);
       }else if(mousePos.x>(W+2*esp_x) && mousePos.x<(W*7/4+2*esp_x) && mousePos.y>(H/3-esp_y) && mousePos.y<(H/2-2*esp_y)){
-        proceso('menor');
+        proceso('menor',canvas,contexto);
       }
     }
   }, false);

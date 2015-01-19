@@ -1,0 +1,47 @@
+//Posiciones de mis cartas en la foto
+var posicioncarta=[{"x":0,"y":0},{"x":1,"y":0},{"x":0,"y":1},{"x":1,"y":1},{"x":0,"y":2},{"x":1,"y":2},{"x":0,"y":3},{"x":1,"y":3},{"x":0,"y":4},{"x":1,"y":4},{"x":9,"y":4},{"x":8,"y":5},{"x":9,"y":5},
+                  {"x":2,"y":0},{"x":3,"y":0},{"x":2,"y":1},{"x":3,"y":1},{"x":2,"y":2},{"x":3,"y":2},{"x":2,"y":3},{"x":3,"y":3},{"x":2,"y":4},{"x":3,"y":4},{"x":9,"y":1},{"x":8,"y":2},{"x":9,"y":2},
+                  {"x":4,"y":0},{"x":5,"y":0},{"x":4,"y":1},{"x":5,"y":1},{"x":4,"y":2},{"x":5,"y":2},{"x":4,"y":3},{"x":5,"y":3},{"x":4,"y":4},{"x":5,"y":4},{"x":8,"y":0},{"x":9,"y":0},{"x":8,"y":1},
+                  {"x":6,"y":0},{"x":7,"y":0},{"x":6,"y":1},{"x":7,"y":1},{"x":6,"y":2},{"x":7,"y":2},{"x":6,"y":3},{"x":7,"y":3},{"x":6,"y":4},{"x":7,"y":4},{"x":8,"y":3},{"x":9,"y":3},{"x":8,"y":4}];
+
+//Variables para hacer el tamaño escalable                             
+var esp_x=5;
+var esp_y=10;
+var carta_x=106;
+var carta_y=142.3;
+
+//Varaibles para encontrar la foto de la carta en la baraja
+var sx=75;
+var sy=60;
+var sW=146;
+var sH=196;
+
+//Varianle para las imagenes de las cartas
+var imgc = new Image();
+imgc.src = '/images/baraja.jpg';                                                           					//La imagen de mi cartavacia
+
+//Cuando cargo la pagina empiezo el juego
+window.onload = function(){
+	//Obtengo mediante mi id el Canvas
+	var canvas = document.getElementById('micanvas');
+	//Obtengo contexto mediante mi canvas
+	var contexto = canvas.getContext('2d');
+	if(canvas && contexto)
+	{
+		for(var i=0;i<8;i++)
+		{
+			if(i>2 && i<6)
+			{
+				contexto.drawImage(imgc ,sx+sW*12,sy+sH*6,sW,sH, i*carta_x+(i+1)*esp_x, esp_y, carta_x, carta_y);         	//Dibujo la imagen de mi carta 		
+			}else{
+				contexto.drawImage(imgc ,sx+sW*12,sy+sH*6,sW,sH, i*carta_x+(i+1)*esp_x, carta_y+2*esp_y, carta_x, carta_y);         	//Dibujo la imagen de mi carta		
+			}
+		}	
+
+	}
+
+	canvas.addEventListener("click", function (evt){  
+		//Obtengo la posicion del ratón
+		var mousePos = getMousePos(canvas, evt);
+		}); 
+}

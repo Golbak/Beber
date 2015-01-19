@@ -23,7 +23,7 @@ router.get('/normas', function(req, res) {
 	var modos;										//variable para los modos del juego
 
 	var error=0;									//creo un flag para saber si he obtenido un error
-	for(var i=0;i<juegos.length;i++)				//recorro mi objeto json
+	for(var i=0,tamano=juegos.length;i<tamano;i++)	//recorro mi objeto json
 	{
 		if(juego==juegos[i]["juego"])				//si el nombre del juego coincide obtengo el indice
 		{
