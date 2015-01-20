@@ -12,8 +12,8 @@ var numcartas=52;
 //Variables para hacer el tamaño escalable                             
 var esp_x=10;
 var esp_y=10;
-var W=253;
-var H=418;
+var carta_x=253;
+var carta_y=418;
 
 //Varaibles para encontrar la foto de la carta en la baraja
 var sx=75;
@@ -21,13 +21,13 @@ var sy=60;
 var sW=146;
 var sH=196;
 
-//Varianle para las imagenes de las cartas
+//Variable para las imagenes de las cartas
 var imgc = new Image();
 imgc.src = '/images/baraja.jpg';                                                           //La imagen de mi cartavacia
 var imgb = [new Image(),new Image(),new Image()];
-imgb[0].src = '/images/boton1.jpg';
-imgb[1].src = '/images/boton2.jpg';
-imgb[2].src = '/images/boton3.jpg';
+imgb[0].src = '/images/Mayor.jpg';
+imgb[1].src = '/images/Igual.jpg';
+imgb[2].src = '/images/Menor.jpg';
 
 //Funcion para obtener la posicion del raton
 function getMousePos(canvas, evt) {
@@ -76,7 +76,7 @@ function Beber(flag)
 {
   if(flag)                                                                                  //Si es verdad sera que he acertado y por tanto no me toca beber
   {
-    alert('No bebas');                                                                      //Animacion que me mostrara que no me toca beber
+    alert('No bebes');                                                                      //Animacion que me mostrara que no me toca beber
   }else{
     alert('Bebes');                                                                         //Si en cambio fallo mostrare animacion de que me toca beber
   }
@@ -111,20 +111,20 @@ function DibujarBotones(contexto)
 {
   for(var i=0,tamano=imgb.length;i<tamano;i++)
   {
-      contexto.drawImage(imgb[i],W+2*esp_x,esp_y+(H/6-esp_y)*(i),W*3/4,H/6-esp_y);          //Dibujo mi nuevo boton
+      contexto.drawImage(imgb[i],carta_x+2*esp_x,esp_y+(carta_y/6-esp_y)*(i),carta_x*3/4,carta_y/6-esp_y);          //Dibujo mi nuevo boton
   } 
 }
 
 //Funcion Dibujar Carta Grande
 function DibujarCartaGrande(x,y,contexto)
 {
-  contexto.drawImage(imgc , sx+sW*x, sy+sH*y, sW, sH, esp_x, esp_y, W, H);                   //Dibujo la imagen de mi carta
+  contexto.drawImage(imgc , sx+sW*x, sy+sH*y, sW, sH, esp_x, esp_y, carta_x, carta_y);                   //Dibujo la imagen de mi carta
 }
 
 //Funcion Dibujar Carta Pequeña
 function DibujarCartaPequena(x,y,contexto)
 {
-  contexto.drawImage(imgc , sx+sW*x, sy+sH*y, sW, sH, W+2*esp_x, H/2+esp_y, W/2, H/2);       //Dibujo la imagen de mi carta
+  contexto.drawImage(imgc , sx+sW*x, sy+sH*y, sW, sH, carta_x*9/8+2*esp_x, carta_y/2+esp_y, carta_x/2, carta_y/2);       //Dibujo la imagen de mi carta
 }
 //Funcion IniciarUI
 function iniciarUI(canvas,contexto)
@@ -163,11 +163,11 @@ window.onload = function(){
       iniciarUI(canvas,contexto);
     }else{
       //Si mi raton esta encima de unos de los botones
-      if(mousePos.x>(W+2*esp_x) && mousePos.x<(W*7/4+2*esp_x) && mousePos.y>(esp_y) && mousePos.y<(H/6)){
+      if(mousePos.x>(carta_x+2*esp_x) && mousePos.x<(carta_x*7/4+2*esp_x) && mousePos.y>(esp_y) && mousePos.y<(carta_y/6)){
         proceso('mayor',canvas,contexto);
-      }else if(mousePos.x>(W+2*esp_x) && mousePos.x<(W*7/4+2*esp_x) && mousePos.y>(H/6) && mousePos.y<(H/3-esp_y)){
+      }else if(mousePos.x>(carta_x+2*esp_x) && mousePos.x<(carta_x*7/4+2*esp_x) && mousePos.y>(carta_y/6) && mousePos.y<(carta_y/3-esp_y)){
         proceso('igual',canvas,contexto);
-      }else if(mousePos.x>(W+2*esp_x) && mousePos.x<(W*7/4+2*esp_x) && mousePos.y>(H/3-esp_y) && mousePos.y<(H/2-2*esp_y)){
+      }else if(mousePos.x>(carta_x+2*esp_x) && mousePos.x<(carta_x*7/4+2*esp_x) && mousePos.y>(carta_y/3-esp_y) && mousePos.y<(carta_y/2-2*esp_y)){
         proceso('menor',canvas,contexto);
       }
     }
