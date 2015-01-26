@@ -57,7 +57,6 @@ function comprobarClick(mousePos){
 
 function obtenerCarta(path)
 {
-  console.log(path);
   var carta;                                                                                //Variable para la nueva carta
   do{
     carta=parseInt(Math.floor(Math.random()*(numcartas)));                                              //Obtengo la nueva carta
@@ -172,7 +171,7 @@ function iniciar(canvas,contexto)
       cartas[i].dibuja(contexto);  
   }
 }
-//Comprobar si se ha pinchado una de las
+
 //Cuando cargo la pagina empiezo el juego
 window.onload = function(){
   //Obtengo mediante mi id el Canvas

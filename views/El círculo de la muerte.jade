@@ -2,7 +2,11 @@ extends layout
 
 block append head
 	script(src='//code.jquery.com/jquery-1.11.2.min.js')
+	script(src='/javascripts/El círculo de la muerte.js')
+		
 
 block content
 	h1= 'Esta usted jugando a '+ juego
+
+	canvas#micanvas(width="900",height="450") Este texto se muestra para los navegadores no compatibles con canvas.
 	
