@@ -1,12 +1,16 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+html, body {
+	width:  100%;
+	height: 100%;
+	margin: 0px;
+	position: absolute; 
+	top: 0px;
+	left: 0px;
+	overflow: hidden;
 }
 
 a {
-  color: #00B7FF;
+  	color: #00B7FF;
 }
-
-canvas { 
-	border: 1px solid black; 
+micanvas{
+	display: block;
 }

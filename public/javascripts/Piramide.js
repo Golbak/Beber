@@ -489,6 +489,7 @@ function croupier(canvas,contexto)
 		{
 			var carta=miMazo.sacarCarta();
 			milista_Cartas.destapar(carta,click.i,micontexto);
+			dibuja();
 			cartasdestapadas++;
 			var comprobacion=milista_Jugadores.comprueba(carta);
 			if(comprobacion.length>0)
@@ -534,8 +535,8 @@ window.onload = function(){
   	//Aqui mi condigo para redimensionar mi Canvas
   	//
   	//
-  	canvas.width=window.innerWidth;
-  	canvas.height=window.innerHeight;
+  	canvas.width= window.innerWidth;
+  	canvas.height= window.innerHeight;
   	//Obtengo contexto mediante mi canvas
   	var contexto = canvas.getContext('2d');
   	//
@@ -546,8 +547,8 @@ window.onload = function(){
   		//Añadimos evento de resize
   		window.addEventListener("resize", function (evt){  
 	  		console.log("paso poraqui");
-	  		canvas.width=window.innerWidth;
-  			canvas.height=window.innerHeight;
+	  		canvas.width= window.innerWidth;
+  			canvas.height= window.innerHeight;
 	    	microupier.resize(canvas,contexto);
 	  	},false);
   		//Añadimos un addEventListener al canvas, para reconocer el click
