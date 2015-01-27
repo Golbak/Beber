@@ -31,9 +31,9 @@ var sH=196;
 var imgc = new Image();
 imgc.src = '/images/baraja.jpg';                                                           	//La imagen de mi cartavacia
 var imgb = [new Image(),new Image(),new Image()];
-imgb[0].src = '/images/boton1.jpg';
-imgb[1].src = '/images/boton2.jpg';
-imgb[2].src = '/images/boton3.jpg';
+imgb[0].src = '/images/Mayor.jpg';
+imgb[1].src = '/images/Igual.jpg';
+imgb[2].src = '/images/Menor.jpg';
 
 //Funcion para obtener la posicion del raton
 function getMousePos(canvas, evt) {
