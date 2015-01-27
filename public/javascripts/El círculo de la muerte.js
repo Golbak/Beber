@@ -89,7 +89,9 @@ function comprobarClick(mousePos){
       		};
     	}
   	}
-  	return false;
+  	return {
+  		boolean: false
+  	}
 }
 //Funcion que dibuja carta
 function dibuja(canvas,contexto)
