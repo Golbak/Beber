@@ -9,7 +9,6 @@ const posicioncarta=[{"x":0,"y":0},{"x":1,"y":0},{"x":0,"y":1},{"x":1,"y":1},{"x
                   {"x":6,"y":0},{"x":7,"y":0},{"x":6,"y":1},{"x":7,"y":1},{"x":6,"y":2},{"x":7,"y":2},{"x":6,"y":3},{"x":7,"y":3},{"x":6,"y":4},{"x":7,"y":4},{"x":8,"y":3},{"x":9,"y":3},{"x":8,"y":4}];
 
 //Constantes relativas al juego
-const numerocartas=38;
 const cartasjugadores=3;
 
 //Funcion para obtener la posicion del raton
@@ -425,23 +424,16 @@ function croupier(canvas,contexto)
 
 		var posiciones=[];
 		var numerocartas=0;
-		var esp_x=5;
-		var esp_y=5;
-		var carta_x=(canvas.width-esp_x*8)/10;
-		var carta_y=(canvas.height-esp_x*8)/7;
-
 		for(var i=0;i<7;i++)
 		{
 
 			for(var j=0,tamano=(7-i);j<tamano;j++)
 			{
-				posiciones[numerocartas]={"x":(j+1)*esp_x+j*carta_x+i*(carta_x+esp_y)/2,"y":tamano*esp_y+(tamano-1)*carta_y};
+				posiciones[numerocartas]={"x":0,"y":0};
 				numerocartas++;
 			}
 		}
 		milista_Cartas.inicia(numerocartas,posiciones);
-		milista_Cartas.setTamano(carta_x,carta_y);
-		
 
 		limite["superior"]=6;
 		limite["inferior"]=0;
@@ -451,6 +443,7 @@ function croupier(canvas,contexto)
 			var numjugadores=4;
 			var nombres = [];
 			var cartas = [];	
+			console.log("meto mis jugadores");
 			nombres.push("Primero");
 			nombres.push("Segundo");
 			nombres.push("Tercero");
@@ -460,13 +453,35 @@ function croupier(canvas,contexto)
 				cartas.push(miMazo.sacarCarta(),miMazo.sacarCarta(),miMazo.sacarCarta());
 			}
 			milista_Jugadores.inicia(numjugadores,nombres,cartas);
-			milista_Jugadores.setTamano(carta_x,carta_y);
-			milista_Jugadores.setPosicion({"x":7*carta_x+8*esp_x,"y":0});
-
 		})();
-		
+		resize(micanvas,micontexto);
 		dibuja();
 	}
+
+	var resize = function(canvas,contexto)
+	{
+		var posiciones=[];
+		var numerocartas=0;
+		var esp_x=5;
+		var esp_y=5;
+		var carta_x=(canvas.width-esp_x*8)/10;
+		var carta_y=(canvas.height-esp_x*8)/7;
+		for(var i=0;i<7;i++)
+		{
+
+			for(var j=0,tamano=(7-i);j<tamano;j++)
+			{
+				posiciones[numerocartas]={"x":(j+1)*esp_x+j*carta_x+i*(carta_x+esp_y)/2,"y":tamano*esp_y+(tamano-1)*carta_y};
+				numerocartas++;
+			}
+		}
+		milista_Cartas.setTamano(carta_x,carta_y);
+		milista_Cartas.setPosicion(posiciones);
+		milista_Jugadores.setTamano(carta_x,carta_y);
+		milista_Jugadores.setPosicion({"x":7*carta_x+8*esp_x,"y":0});
+		dibuja();
+	}
+
 	var click = function(x,y)
 	{
 		var click = milista_Cartas.dentro(x,y);
@@ -506,10 +521,12 @@ function croupier(canvas,contexto)
 	}
 	return{
 		inicia: inicia,
+		resize: resize,
 		click: click
 	}
 }
 
+var microupier;
 //Cuando cargo mi pagina por primera vez
 window.onload = function(){
   	//Obtengo mediante mi id el Canvas
@@ -517,20 +534,27 @@ window.onload = function(){
   	//Aqui mi condigo para redimensionar mi Canvas
   	//
   	//
-  	canvas.width=500;
-  	canvas.height=500;
+  	canvas.width=window.innerWidth;
+  	canvas.height=window.innerHeight;
   	//Obtengo contexto mediante mi canvas
   	var contexto = canvas.getContext('2d');
   	//
   	if(canvas && contexto)
   	{
-  		var microupier = new croupier(canvas,contexto);
+  		microupier = new croupier(canvas,contexto);
   		microupier.inicia(canvas);
+  		//Añadimos evento de resize
+  		window.addEventListener("resize", function (evt){  
+	  		console.log("paso poraqui");
+	  		canvas.width=window.innerWidth;
+  			canvas.height=window.innerHeight;
+	    	microupier.resize(canvas,contexto);
+	  	},false);
   		//Añadimos un addEventListener al canvas, para reconocer el click
   		canvas.addEventListener("click", function (evt){  
-  		//Obtengo la posicion del ratón
-    	var mousePos = getMousePos(canvas, evt);
-    	microupier.click(mousePos.x,mousePos.y);
+	  		//Obtengo la posicion del ratón
+	    	var mousePos = getMousePos(canvas, evt);
+	    	microupier.click(mousePos.x,mousePos.y);
 	  	}, false);	
 	}
 }

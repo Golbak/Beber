@@ -10,10 +10,10 @@ var posicioncarta=[{"x":0,"y":0},{"x":1,"y":0},{"x":0,"y":1},{"x":1,"y":1},{"x":
 var numcartas=52;
 
 //Variables para hacer el tamaño escalable                             
-var esp_x=10;
-var esp_y=10;
-var carta_x=253;
-var carta_y=418;
+var esp_x=50;
+var esp_y=50;
+var carta_x=1265;
+var carta_y=2090;
 
 //Varaibles para encontrar la foto de la carta en la baraja
 var sx=75;
