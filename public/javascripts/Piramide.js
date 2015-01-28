@@ -11,6 +11,9 @@ const posicioncarta=[{"x":0,"y":0},{"x":1,"y":0},{"x":0,"y":1},{"x":1,"y":1},{"x
 //Constantes relativas al juego
 const cartasjugadores=3;
 
+//Variable global para la imagen de la carta
+var imgc;
+
 //Funcion para obtener la posicion del raton
 function getMousePos(canvas, evt) {
   var rect = canvas.getBoundingClientRect();                                                //Obtengo coordenadas de mi canvas
@@ -73,8 +76,6 @@ function Carta(posicion_x,posicion_y){
 	var posicioncarta_y=6;
 	var miestado=1;
 	var micarta=-1;
-	var imgc = new Image();
-	imgc.src = '/images/baraja.jpg';
 
 	var setTamano = function(tamcart_x,tamcart_y)
 	{
@@ -416,8 +417,15 @@ function croupier(canvas,contexto)
 		milista_Cartas.dibuja(micontexto);
 		milista_Jugadores.dibuja(micanvas,micontexto);
 	}
-	var inicia = function(canvas,contexto)
+	var cargarImagen = function (callback)
 	{
+		imgc = new Image();
+		imgc.onload = callback;
+		imgc.src = '/images/baraja.jpg';
+	}
+	var inicia = function()
+	{
+		cargarImagen(function(canvas,contexto){
 		estado=0;
 		cartasdestapadas=0;
 		miMazo.reiniciar();
@@ -456,6 +464,20 @@ function croupier(canvas,contexto)
 		})();
 		resize(micanvas,micontexto);
 		dibuja();
+			//Añadimos evento de resize
+  			window.addEventListener("resize", function (evt){  
+	  			console.log("paso poraqui");
+	  			micanvas.width= window.innerWidth;
+  				micanvas.height= window.innerHeight;
+	    		resize(micanvas,micontexto);
+	  		},false);
+  			//Añadimos un addEventListener al canvas, para reconocer el click
+  			micanvas.addEventListener("click", function (evt){  
+	  			//Obtengo la posicion del ratón
+	    		var mousePos = getMousePos(micanvas, evt);
+	    		click(mousePos.x,mousePos.y);
+	  		}, false);	
+  		});
 	}
 
 	var resize = function(canvas,contexto)
@@ -527,10 +549,9 @@ function croupier(canvas,contexto)
 	}
 }
 
-var microupier;
 //Cuando cargo mi pagina por primera vez
 window.onload = function(){
-  	//Obtengo mediante mi id el Canvas
+	//Obtengo mediante mi id el Canvas
   	var canvas = document.getElementById('micanvas');
   	//Aqui mi condigo para redimensionar mi Canvas
   	//
@@ -542,20 +563,8 @@ window.onload = function(){
   	//
   	if(canvas && contexto)
   	{
-  		microupier = new croupier(canvas,contexto);
-  		microupier.inicia(canvas);
-  		//Añadimos evento de resize
-  		window.addEventListener("resize", function (evt){  
-	  		console.log("paso poraqui");
-	  		canvas.width= window.innerWidth;
-  			canvas.height= window.innerHeight;
-	    	microupier.resize(canvas,contexto);
-	  	},false);
-  		//Añadimos un addEventListener al canvas, para reconocer el click
-  		canvas.addEventListener("click", function (evt){  
-	  		//Obtengo la posicion del ratón
-	    	var mousePos = getMousePos(canvas, evt);
-	    	microupier.click(mousePos.x,mousePos.y);
-	  	}, false);	
+  		var microupier = new croupier(canvas,contexto);
+  		microupier.inicia();
 	}
 }
+
