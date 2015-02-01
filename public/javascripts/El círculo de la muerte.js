@@ -1,265 +1,533 @@
-//Array de cartas
-var cartas=[];
-var path=[];
-var mazo=[];
-var carta_x=50;
-var carta_y=80;
-var W;
-var H;
-//Variable que almacena el numero de cartas del mazo (para distintos mazos como la española, la de poker, etc...)                           
-var numcartas=52;
-
-//Posiciones de mis cartas en la foto
-var posicioncarta=[{"x":0,"y":0},{"x":1,"y":0},{"x":0,"y":1},{"x":1,"y":1},{"x":0,"y":2},{"x":1,"y":2},{"x":0,"y":3},{"x":1,"y":3},{"x":0,"y":4},{"x":1,"y":4},{"x":9,"y":4},{"x":8,"y":5},{"x":9,"y":5},
+//Constantes para encontrar la foto de la carta en la baraja
+const sx=75;
+const sy=60;
+const sW=146;
+const sH=196;
+const posicioncarta=[{"x":0,"y":0},{"x":1,"y":0},{"x":0,"y":1},{"x":1,"y":1},{"x":0,"y":2},{"x":1,"y":2},{"x":0,"y":3},{"x":1,"y":3},{"x":0,"y":4},{"x":1,"y":4},{"x":9,"y":4},{"x":8,"y":5},{"x":9,"y":5},
                   {"x":2,"y":0},{"x":3,"y":0},{"x":2,"y":1},{"x":3,"y":1},{"x":2,"y":2},{"x":3,"y":2},{"x":2,"y":3},{"x":3,"y":3},{"x":2,"y":4},{"x":3,"y":4},{"x":9,"y":1},{"x":8,"y":2},{"x":9,"y":2},
                   {"x":4,"y":0},{"x":5,"y":0},{"x":4,"y":1},{"x":5,"y":1},{"x":4,"y":2},{"x":5,"y":2},{"x":4,"y":3},{"x":5,"y":3},{"x":4,"y":4},{"x":5,"y":4},{"x":8,"y":0},{"x":9,"y":0},{"x":8,"y":1},
                   {"x":6,"y":0},{"x":7,"y":0},{"x":6,"y":1},{"x":7,"y":1},{"x":6,"y":2},{"x":7,"y":2},{"x":6,"y":3},{"x":7,"y":3},{"x":6,"y":4},{"x":7,"y":4},{"x":8,"y":3},{"x":9,"y":3},{"x":8,"y":4}];
 
-//Varaibles para encontrar la foto de la carta en la baraja
-var sx=75;
-var sy=60;
-var sW=146;
-var sH=196;
+//Constantes para la dibujar la carta todo referido al ancho o altura (que deberan ser las mismas)
+const margen=0.05;
+const margen_y_superior=0.15;
+const margen_y_inferior=0.05;
+//estos decrementos son los que se aplicaran cuando ya solo queden 3, los intermedios son todos iguales (proporcionales a 49 avances)
+const decremento_y_superior=(0.15-0.02)/(0.15*49);
+const decremento_y_inferior=(0.05-0.019)/(0.05*49);
+
+//Constantes para el mazo
+const numcartasmazo=52;
+
+//Variable global para la imagen de la carta
+var imgc;
 
 //Funcion para obtener la posicion del raton
 function getMousePos(canvas, evt) {
   var rect = canvas.getBoundingClientRect();                                                //Obtengo coordenadas de mi canvas
-  return {
-    x: evt.clientX - rect.left,                                                             //Obtengo coordenadas de mi evento
-    y: evt.clientY - rect.top                                                               //La resta sera donde esta mi cursor en coordenadas absolutas
-  };
+  return {"x": evt.clientX - rect.left,                                                             //Obtengo coordenadas de mi evento
+    	  "y": evt.clientY - rect.top}                                                               //La resta sera donde esta mi cursor en coordenadas absolutas
 }
 
-//Funcion para comprobar si la carta ya ha salido
-function comprobar(carta,path) {
-  for(var i=0,tamano=path.length;i<tamano;i++)                                            //Recorro mis cartas salidas
-  {
-    if(carta==path[i])                                                                    //Si hay una que es igual
-    {
-      return true;                                                                          //Es cierto que esta repetida
-    }
-  }
-  return false;                                                                             //Y devuelvo que no esta repetida
-}
-
-//Funcion que obtiene una carta nueva que no este en el path
-function obtenerCarta(path)
+//Mi clase mazo
+/*****************************************************************/
+function Mazo(numero)
 {
-  var carta;                                                                                //Variable para la nueva carta
-  do{
-    carta=parseInt(Math.floor(Math.random()*(numcartas)));                                              //Obtengo la nueva carta
-  }while(comprobar(carta,path));                                                                 //Compruebo si mi carta ya ha salido 
-  path.push(carta);                                                                       //Meto mi carta en el mazo
-  return carta;
-}
-
-//funcion para saber si se ha sacado bien o no la carta
-function sacarCarta()
-{
-	if(true)
+	var numcartas = numero;
+	var cartas = [];
+	var cartasRestantes = function()
 	{
-		return true;
+		return numcartas-cartas.length;
 	}
-	return false;
-}
-
-//funcion que juega la carta
-function jugarCarta(carta)
-{
-	if(sacarCarta())
+	var cartasSacadas = function()
 	{
-		carta=carta-13*Math.floor(carta/13);
-		alert('Esta usted jugando la carta: '+carta);
-		return true;
+		return cartas.length;
 	}
-	return false;
+	var reiniciar = function()
+	{
+		cartas=[];
+	}
+	var sacarCarta = function(){
+		var carta;
+		if(cartasRestantes()==0)                                                                                
+			return false;
+		do{
+			carta=parseInt(Math.floor(Math.random()*numcartas));                                              
+		}while((function(){
+			for(var i=0,tamano=cartas.length;i<tamano;i++)                                            //Recorro mis cartas salidas
+			{
+				if(carta==cartas[i])                                                                    //Si hay una que es igual
+			    {
+			    	return true;                                                                          //Es cierto que esta repetida
+			    }
+			}
+			return false; 
+		})());
+
+		cartas.push(carta);                                                                       
+		return carta;
+	};
+
+	return {
+		numcartas: numcartas,
+		cartasRestantes: cartasRestantes,
+		cartasSacadas: cartasSacadas,
+		reiniciar: reiniciar,
+		sacarCarta: sacarCarta
+	}
 }
 
-//Funcion para comprobar si se ha pinchado en una carta
-function comprobarClick(mousePos){
-	//Compruebo de derecha a izquierda porque lo he metido al reves y la ultima estara encima de las demas
-  	for(var i=cartas.length-1;i>=0;i--)
-  	{
-    	if(cartas[i].dentro(mousePos.x,mousePos.y))
-    	{
-      		return {
-      			boolean: true,
-      			indice: i,															//Devuelvo mi indice para saber que carta eliminar
-      			valor: cartas.length-(i+1) 											//Devuelvo esto porque meto las cartas en orden inverso a como recorro
-      		};
-    	}
-  	}
+
+//Mi clase carta
+/*****************************************************************/
+function Carta(posicion_x,posicion_y){
+	var mipos = {"x":posicion_x,"y":posicion_y};
+	var migiro = {"angulo":0,"cx":0,"cy":0}
+	var miposicioncarta={"x":12,"y":6};
+	var mitamano = {"x":0,"y":0};
+	var miestado=1;
+	var micarta=-1;
+
+	var setPosicion = function(posicion)
+	{
+		mipos["x"]=posicion["x"];
+		mipos["y"]=posicion["y"];
+	}
+
+	var setGiro = function(giro)
+	{
+		migiro["angulo"]=giro["angulo"];
+		migiro["cx"]=giro["cx"];
+		migiro["cy"]=giro["cy"];
+	}
+
+	var setTamano = function(tamcart)
+	{
+		mitamano["x"]=tamcart["x"];
+		mitamano["y"]=tamcart["y"];
+	}
+
+	var setCarta = function(numero)
+	{
+		if(numero < 0)
+		{
+			miposicioncarta["x"]=12;
+		    miposicioncarta["y"]=6;
+		}else{
+		    miposicioncarta["x"]=posicioncarta[numero]["x"];
+		    miposicioncarta["y"]=posicioncarta[numero]["y"];
+		}
+		micarta=numero;
+		miestado=0;
+	}	
+
+  	var dibuja = function(contexto){
+		if(contexto)
+		{
+			if(migiro["angulo"]!=0)
+			{
+				contexto.save();
+				contexto.translate(migiro["cx"],migiro["cy"]);	
+				contexto.rotate(migiro["angulo"]);	
+			}
+			/*console.log("hola");
+			console.log(posicioncarta);
+			console.log(mipos);
+			console.log(mitamano);*/
+		  	contexto.drawImage(imgc , sx+sW*miposicioncarta["x"], sy+sH*miposicioncarta["y"], sW, sH, mipos["x"], mipos["y"], mitamano["x"], mitamano["y"]);
+		  	if(migiro["angulo"]!=0)
+			{
+		  		contexto.restore();
+		  	}
+		}
+	};
+
+	var destapar = function(numero,contexto)
+	{
+		if(numero < 0)
+		{
+			miposicioncarta["x"]=12;
+		    miposicioncarta["y"]=6;
+		}else{
+		    miposicioncarta["x"]=posicioncarta[numero]["x"];
+		    miposicioncarta["y"]=posicioncarta[numero]["y"];
+		}
+		micarta=numero;
+		miestado=0;
+		dibuja(contexto);
+	}
+
+	var comprueba = function(carta)
+	{
+		var aux=carta-13*Math.floor(carta/13);
+		var aux2=micarta-13*Math.floor(micarta/13);
+		if(aux==aux2)
+			return true;
+		return false;
+	}
+
+  	var dentro = function(pos)
+	{
+		var x=pos["x"];
+		var y=pos["y"];
+		
+		if(migiro["angulo"]!=0)
+		{
+			x-=migiro["cx"];
+			y-=migiro["cy"];
+			var x2 =parseInt( (Math.cos(-migiro["angulo"])*x) - (Math.sin(-migiro["angulo"])*y) );
+			y=parseInt( (Math.sin(-migiro["angulo"])*x) + (Math.cos(-migiro["angulo"])*y) );
+			x=x2;
+			
+		}
+		if(x>=mipos["x"] && y>=mipos["y"] && x<=(mipos["x"]+mitamano["x"]) && y<=(mipos["y"]+mitamano["y"]))
+    		return true;
+    	
+  		return false;
+	};
+  	
   	return {
-  		boolean: false
+  		carta: micarta,
+  		giro: migiro,
+  		setPosicion: setPosicion,
+  		getPosicion: mipos,
+  		setGiro: setGiro,
+  		getGiro: migiro,
+  		setTamano: setTamano,
+  		setCarta: setCarta,
+  		dibuja: dibuja,
+  		destapar: destapar,
+  		comprueba: comprueba,
+  		dentro: dentro
   	}
-}
-//Funcion que dibuja carta
-function dibuja(canvas,contexto)
-{
-	if(contexto)
-	{
-		//Guardo mi contexto antes de transformar
-		contexto.save();
-		//Lo muevo al centro y giro mi angulo
-		contexto.translate(canvas.width/2,canvas.height/2);
-		contexto.rotate(this.angulo);
-		//Dibujo en mi nuego eje a una distancia y=radio
-	  	contexto.drawImage(this.imgc , sx+sW*this.posicioncarta_x, sy+sH*this.posicioncarta_y, sW, sH, 0, this.radio, this.carta_x, this.carta_y);
-	  	//Recupero mi contexto
-	  	contexto.restore();
-	}
-}
-
-//Funcion que dice si esta dentro o no
-function dentro(pos_x,pos_y)
-{
-	//Primero translado mi punto al medio
-	pos_x-=W/2;
-	pos_y-=H/2;
-	//Segundo hago una rotacion sobre mi nuevo punto y translado el radio
-	var pos_x2=parseInt( (Math.cos(-this.angulo)*pos_x) - (Math.sin(-this.angulo)*pos_y) );
-	var pos_y2=parseInt( (Math.sin(-this.angulo)*pos_x) + (Math.cos(-this.angulo)*pos_y) -this.radio);
-
-  	//Si caigo en el cuadrado estoy encima de mi carta
-  	if(pos_x2>=0 && pos_y2>=0 && pos_x2<=this.carta_x && pos_y2<=this.carta_y)
-    	return true;
-  	return false;
-}
-
-//Funcion para obtener la carta
-function getAngulo()
-{
-	return this.angulo;
-}
-
-//Funcion para poner la carta 
-function setAngulo(numero)
-{
-  	this.angulo=numero;
-}
-
-//Funcion para obtener el radio
-function getRadio(numero)
-{
-	return this.radio;
-}
-//Funcion para poner el radio
-function setRadio(numero)
-{
-	this.radio=numero;
-}
-
-//Clase carta
-function Carta(x,y,angulo,radio){
-	this.carta_x = x;
-	this.carta_y = y;
-	this.posicioncarta_x=12;
-	this.posicioncarta_y=6;
-	this.angulo=angulo;
-	this.radio=radio;
-	this.carta=-1;
-	this.imgc = new Image();
-	this.imgc.src = '/images/baraja.jpg';
-  	this.getAngulo = getAngulo;
-  	this.setAngulo = setAngulo;
-  	this.getRadio = getRadio;
-  	this.setRadio = setRadio;
-  	this.dibuja = dibuja;
-	this.dentro = dentro;
 } 
 
-//Funcion recolocar
-function recolocar(canvas,contexto,valor)
+//Mi clase lista carta
+/*****************************************************************/
+function lista_Cartas()
 {
-	//truco para limpiar el canvas
-	canvas.width=canvas.width;
-	var tamano=path.length;
-	var rango=(10+(40/49*(tamano-3)))/(10+(40/49*(tamano-2))),limiteiferiornuevo=-20+70/49*(tamano-3),limiteiferiorantiguo=-20+70/49*(tamano-2);
+	var cartas=[];
+
+	var inicia = function(numcartas,json_posiciones)
+	{
+		cartas=[];
+		if(numcartas==json_posiciones.length)
+		{
+			cartas=[];
+			for(var i=0;i<numcartas;i++)
+				cartas.push(new Carta(json_posiciones[i]["x"],json_posiciones[i]["y"]));
+		}else{
+			console.log("Se ha introducido datos erroneos");
+		}
+	}
+
+	var inicia2 = function(numcartas,json_posiciones,cartasr)
+	{
+		cartas=[];
+		if(numcartas==json_posiciones.length && numcartas==cartasr.length)
+		{
+			cartas=[];
+			for(var i=0;i<numcartas;i++)
+			{
+				cartas.push(new Carta(json_posiciones[i]["x"],json_posiciones[i]["y"]));
+				cartas[i].setCarta(cartasr[i]);
+			}
+		}else{
+			console.log("Se ha introducido datos erroneos");
+		}
+	}
+
+	var anadirCarta = function(indice,carta)
+	{
+		cartas[indice]=carta;
+	}
+
+	var eliminarCarta = function(indice)
+	{
+		if(cartas[indice])
+			cartas.splice(indice,1);
+	}
+
+	var is = function(indice)
+	{
+		if(cartas[indice])
+			return true;
+		return false;
+	}
+	var setTamano = function(tamcart)
+	{
+		for(var i=0,tamano=cartas.length;i<tamano;i++)
+			cartas[i].setTamano(tamcart);
+	}
+
+	var setPosicion = function(pos)
+	{
+		if(pos)
+		{
+			var tamano=cartas.length;
+			if(pos.length==tamano)
+			{
+				for(var i=0;i<tamano;i++)
+					cartas[i].setPosicion(pos[i]);
+			}
+		}
+	}
+
+	var getPosicion = function()
+	{
+		var res;
+		for(var i=0,tamano=cartas.length;i<tamano;i++)
+				res.push(cartas[i].getPosicion());
+		return res;
+	}
+
+	var setGiro = function(giros)
+	{
+		if(giros.length==cartas.length)
+		{
+			for(var i=0,tamano=cartas.length;i<tamano;i++)
+				cartas[i].setGiro(giros[i]);
+		}
+	}
+
+	var getGiro = function()
+	{
+		var res;
+		for(var i=0,tamano=cartas.length;i<tamano;i++)
+				res.push(cartas[i].getGiro());
+		return res;
+	}
+
+	var dibuja = function(contexto)
+	{
+		for(var i=0,tamano=cartas.length;i<tamano;i++)
+			cartas[i].dibuja(contexto);
+	}
+
+	var destapar = function(carta,indice,contexto)
+	{
+		cartas[indice].destapar(carta,contexto);
+	}
+
+	var comprueba = function(carta)
+	{
+		for(var i=0,tamano=cartas.length;i<tamano;i++)
+		{
+			if(cartas[i].comprueba(carta))
+				return  true;
+		}
+		return false;
+	}
+
+	var dentro = function(pos)
+	{
+		for(var i=0,tamano=cartas.length;i<tamano;i++)
+		{
+			if(cartas[i].dentro(pos))
+			{
+				return {
+					boolean: true,
+					i: i
+				}
+			}
+		}
+		return {
+				boolean: false
+		}
+	}
+
+	var dentro2 = function(pos)
+	{
+		for(var i=cartas.length-1;i>=0;i--)
+		{
+			if(cartas[i].dentro(pos))
+			{
+				return {
+					boolean: true,
+					i: i
+				}
+			}
+		}
+		return {
+				boolean: false
+		}
+	}
+
+	return {
+		inicia: inicia,
+		inicia2: inicia2,
+		anadirCarta: anadirCarta,
+		eliminarCarta: eliminarCarta,
+		is: is,
+		setTamano: setTamano,
+		setPosicion: setPosicion,
+		getPosicion: getPosicion,
+		setGiro: setGiro,
+		getGiro: getGiro,
+		dibuja: dibuja,
+		destapar: destapar,
+		comprueba: comprueba,
+		dentro: dentro,
+		dentro2: dentro2
+	}
+}
+
+
+//Mi clase croupier
+function croupier(canvas,contexto)
+{
+	var miMazo = new Mazo(numcartasmazo);
+	var milista_Cartas = new lista_Cartas();
+	var micanvas = canvas;
+	var micontexto = contexto;
+	var informacion = [];
+	var miangulo;
+	var margenes ={	"margen":0, "y":{"superior":micanvas.width*margen_y_superior,"inferior":micanvas.width*margen_y_inferior}};
+	
+	var dibuja = function()
+	{
+		micanvas.width=micanvas.width;
+		milista_Cartas.dibuja(micontexto);
+	}
+	var cargarImagen = function (callback)
+	{
+		imgc = new Image();
+		imgc.onload = callback;
+		imgc.src = '/images/baraja.jpg';
+	}
+	var inicia = function()
+	{
+		cargarImagen(function(canvas,contexto){
+			miMazo.reiniciar();
+			miangulo=2*Math.random()*Math.PI/3;
+			for(var i=0,tamano=miMazo.numcartas;i<tamano;i++)
+		  	{
+		  			//Genero aleatorio para que unas cartas esten encima de otras
+	  			var aleatorio;
+	  			do
+	  			{
+	  				aleatorio=parseInt(Math.floor(Math.random()*(miMazo.numcartas)));
+	  			}while(milista_Cartas.is(aleatorio));
+	  			//Meto de izquierda a derecha mis cartas en el array
+	  			var y=Math.random();
+	  			var angulo=Math.random();
+	  			milista_Cartas.anadirCarta(aleatorio,new Carta(0,y));
+	  			informacion[i]={"path":aleatorio,"y":y};
+	  		}
+			//Aqui mi condigo para redimensionar mi Canvas
+			resize(micanvas);
+			//Añadimos evento de resize
+  			window.addEventListener("resize", function (evt){  
+	  			micanvas.width= window.innerWidth;
+  				micanvas.height= window.innerHeight;
+	    		resize(micanvas);
+	  		},false);
+  			//Añadimos un addEventListener al canvas, para reconocer el click
+  			micanvas.addEventListener("click", function (evt){  
+	  			//Obtengo la posicion del ratón
+	    		click(getMousePos(micanvas, evt));
+	  		}, false);	
+  		});
+	}
+	//Funcion que sirve para recolocar las cartas cuando es necesario
+	var recolocar = function ()
+	{
+		var limite={	"y":{	"superior":margenes["y"]["superior"]-margenes["y"]["superior"]*decremento_y_superior*miMazo.cartasSacadas(),
+								"inferior":margenes["y"]["inferior"]-margenes["y"]["inferior"]*decremento_y_inferior*miMazo.cartasSacadas()}};
+
+		var width=micanvas.width;
+		var posicion_x=-((width - 2*(margenes["margen"]+limite["y"]["superior"]))/2)*(sW/sH)/2;
+		
+		var giros=[];
+		for(var i=0,tamano=informacion.length;i<tamano;i++)
+		{
 			
-	//ahora recoloco las cartas con nuevos radios
-	for(var i=0;i<tamano;i++)
-	{
-		if(path[i]>valor)
-			path[i]--;
-		cartas[path[i]].setAngulo(2*(i+1)*Math.PI/(tamano));
-		cartas[path[i]].setRadio( (rango*(cartas[path[i]].getRadio()-limiteiferiorantiguo))+limiteiferiornuevo ); //Mi rango en 51 es (100,50) y en 3 es (-10,-20)
+			giros[informacion[i]["path"]]={	"angulo":(2*(i+1)*Math.PI/(tamano))+miangulo,
+											"cx":width/2,"cy":width/2,
+											"x":posicion_x,
+											"y":(limite["y"]["superior"]-limite["y"]["inferior"])*informacion[i]["y"]+limite["y"]["inferior"]};
+		}
+
+		milista_Cartas.setPosicion(giros);
+		milista_Cartas.setGiro(giros);
+		dibuja();
 	}
-	//Dibujo el circulo
-	for(var i=0,tamano=cartas.length;i<tamano;i++)   
-	  	cartas[i].dibuja(canvas,contexto);  
-}
-//Funcion que reinicia todo
-function iniciar(canvas,contexto)
-{
-	if(contexto)
+	//Funcion que sirve para cambiar los tamaños de las cartas
+	var resize = function(canvas)
 	{
-	  	$("#micanvas").attr("width",800);
-	  	$("#micanvas").attr("height",800);
+		if(window.innerWidth<window.innerHeight)
+		{
+			micanvas.width = window.innerWidth;
+		  	micanvas.height = window.innerWidth;
+		}else{
+			micanvas.width = window.innerHeight;
+		  	micanvas.height = window.innerHeight;
+		}
+		var tamanos={"x":0,"y":0},width=micanvas.width;
+		margenes["margen"]=width*margen;
+	  	margenes["y"]["superior"]=width*margen_y_superior;
+	  	margenes["y"]["inferior"]=width*margen_y_inferior;
 
-	  	W=canvas.width;
-	  	H=canvas.height;
+	  	tamanos["y"]= width/2 - (margenes["margen"]+margenes["y"]["superior"]);
+	  	tamanos["x"]= (sW/sH)*tamanos["y"];
+	  	milista_Cartas.setTamano(tamanos);
 
-	  	//Reinicio variables
-	  	path=[];
-	  	cartas=[];
+	  	recolocar();
+	}
+	//Mi funcion para encontrar en informacion quien soy
+	var buscar =function(json,dato)
+	{
+		for(var i=0,tamano=json.length;i<tamano;i++)
+		{
+			if(json[i]["path"]==dato)
+				return i;
+		}
+		return -1;
+	}
+	//Mi funcion que dicta que se hace cuando existe un click
+	var click = function(pos)
+	{
+		var click = milista_Cartas.dentro2(pos);
+		if(click.boolean)
+		{
+			milista_Cartas.eliminarCarta(click.i);
+			informacion.splice(buscar(informacion,click.i),1);
+			for(var i=0,tamano=informacion.length;i<tamano;i++)
+			{
+				if(informacion[i]["path"]>=click.i)
+					informacion[i]["path"]--;
+			}
+			console.log("Esta jugando la carta: "+miMazo.sacarCarta());
+			recolocar();
+			if(miMazo.cartasRestantes()==3)
+				alert("estas jodido amigo");
+		}
+		
+	}
 
-	  	var radio_max=100;
-	  	var radio_min=50;
-	  	//Meto las cartas en circulo
-	  	for(var i=0;i<numcartas;i++)
-	  	{
-	  		//Genero aleatorio para que unas cartas esten encima de otras
-	  		var aleatorio;
-	  		do
-	  		{
-	  			aleatorio=parseInt(Math.floor(Math.random()*(numcartas)));
-	  		}while(cartas[aleatorio]!=undefined);
-	  		//Genero un radio aleatorio para que unas cartas esten mas alejadas que otras del centro
-	  		var radio=parseInt(Math.floor(Math.random()*(radio_max-radio_min)+radio_min));
-	  		//Meto de izquierda a derecha mis cartas en el array
-	  		cartas[aleatorio]=(new Carta(carta_x,carta_y,2*(i+1)*Math.PI/(numcartas),radio)); 
-	  		path.push(aleatorio);
-	  	}
-	  	console.log(path);
-	  	console.log(cartas.length);
-	  	//Dibujo el circulo
-	  	for(var i=0,tamano=cartas.length;i<tamano;i++)   
-	    	cartas[i].dibuja(canvas,contexto);  
+	return{
+		inicia: inicia,
 	}
 }
 
+//Cuando cargo mi pagina por primera vez
 window.onload = function(){
-  	//Obtengo mediante mi id el Canvas
+	//Obtengo mediante mi id el Canvas
   	var canvas = document.getElementById('micanvas');
+  	if(window.innerWidth<window.innerHeight)
+		{
+			micanvas.width = window.innerWidth;
+		  	micanvas.height = window.innerWidth;
+		}else{
+			micanvas.width = window.innerHeight;
+		  	micanvas.height = window.innerHeight;
+		}
   	//Obtengo contexto mediante mi canvas
   	var contexto = canvas.getContext('2d');
-  	//Inicio el juego
-  	iniciar(canvas,contexto);
-  	//Añadimos un addEventListener al canvas, para reconocer el click
-	canvas.addEventListener("click", function (evt){  
-	    //Obtengo la posicion del ratón
-	    var mousePos = getMousePos(canvas, evt);
-	    var comprobacion=comprobarClick(mousePos);
-	    if(comprobacion.boolean)
-	    {
-	    	//Juego la carta
-	    	if(jugarCarta(obtenerCarta(mazo)))
-	    	{
-		    	//Elimino la carta
-		    	cartas.splice(comprobacion.indice,1);
-		    	var valor=comprobacion.valor;
-		    	path.splice(path.indexOf(comprobacion.valor),1);
-		    	recolocar(canvas,contexto,valor);
-		    }else{
-		    	alert('Has jodido el circulo');
-		    	iniciar(canvas,contexto);
-		    }
-	    }
-	    if(cartas.length<4)
-	    {
-	    	alert('Has terminado');
-	    	iniciar(canvas,contexto);
-	    }
-
-	    });
+  	//
+  	if(canvas && contexto)
+  	{
+  		var microupier = new croupier(canvas,contexto);
+  		microupier.inicia();
+	}
 }
