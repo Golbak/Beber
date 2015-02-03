@@ -110,7 +110,7 @@ function Carta(posicion_x,posicion_y){
     miestado=0;
   } 
 
-    var dibuja = function(contexto){
+  var dibuja = function(contexto){
     if(contexto)
     {
       if(migiro["angulo"]!=0)
@@ -129,20 +129,21 @@ function Carta(posicion_x,posicion_y){
           contexto.restore();
         }
     }
-  };
+  }
 
   var destapar = function(numero,contexto)
   {
     if(numero < 0)
     {
       miposicioncarta["x"]=12;
-        miposicioncarta["y"]=6;
+      miposicioncarta["y"]=6;
+      miestado=1;
     }else{
-        miposicioncarta["x"]=posicioncarta[numero]["x"];
-        miposicioncarta["y"]=posicioncarta[numero]["y"];
+      miposicioncarta["x"]=posicioncarta[numero]["x"];
+      miposicioncarta["y"]=posicioncarta[numero]["y"];
+      miestado=0;
     }
     micarta=numero;
-    miestado=0;
     dibuja(contexto);
   }
 
@@ -158,7 +159,7 @@ function Carta(posicion_x,posicion_y){
     return false;
   }
 
-    var dentro = function(pos)
+  var dentro = function(pos)
   {
     var x=pos["x"];
     var y=pos["y"];
@@ -389,9 +390,16 @@ function croupier(canvas,contexto)
   {
     cargarImagen(function(canvas,contexto){
       estado=0;
-      miMazo.reiniciar();
       milista_Cartas.inicia(numerocartas);
-      milista_Cartas.destapar(miMazo.sacarCarta(),0,micontexto);
+
+      var carta;
+      do
+      {
+        miMazo.reiniciar();
+        carta=miMazo.sacarCarta();
+      }while((carta-13*Math.floor(carta/13))>9);
+      milista_Cartas.destapar(carta,0,micontexto);
+      
       //Aqui mi condigo para redimensionar mi Canvas
       resize(micanvas);
       //Añadimos evento de resize
