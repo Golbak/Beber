@@ -295,7 +295,7 @@ function lista_Botones()
     var variable=imagenes;
     if(variable.length>1)
     {
-      misbotones[variable.length-1].setImagen(variable.pop(),setImagen(variable,callback));
+      misbotones[variable.length-1].setImagen(variable.pop(),function(){setImagen(variable,callback);});
     }else{
       misbotones[variable.length-1].setImagen(variable.pop(),callback);
     }  
@@ -367,7 +367,7 @@ function croupier(canvas,contexto)
     miLista_Botones.inicia(numbotones);
     var img_botones=['/images/Mayor.jpg','/images/Igual.jpg','/images/Menor.jpg'];
     miLista_Botones.setValor(['Mayor','Igual','Menor']);
-    cargarImagen('/images/baraja.jpg',miLista_Botones.setImagen(img_botones,
+    cargarImagen('/images/baraja.jpg',function(){miLista_Botones.setImagen(img_botones,
       function(canvas,contexto){
         miMazo.reiniciar();
         //Aqui mi condigo para redimensionar mi Canvas
@@ -387,7 +387,7 @@ function croupier(canvas,contexto)
           //Obtengo la posicion del ratón
           click(getMousePos(micanvas, evt));
         }, false);  
-      }));
+      });});
   }
 
   //Funcion que sirve para cambiar los tamaños de las cartas
@@ -445,22 +445,24 @@ function croupier(canvas,contexto)
       var anteriorcarta = miCartaGrande.getCarta();
       miCartaPequena.destapar(anteriorcarta,micontexto);
       miCartaGrande.destapar(nuevacarta,micontexto);
-
+      
+      dibuja();
+      
       nuevacarta=nuevacarta-13*Math.floor(nuevacarta/13); 
       anteriorcarta=anteriorcarta-13*Math.floor(anteriorcarta/13); 
 
       switch(click.valor){
       case 'Mayor':                                                                           //Si me han dado mayor   
         if(nuevacarta<=anteriorcarta)
-          console.log('Bebes');
+          alert('Bebes');
         break;
       case 'Igual':                                                                           //Si me han dado igual
         if(nuevacarta!=anteriorcarta)
-          console.log('Bebes');
+          alert('Bebes');
         break;
       case 'Menor':                                                                           //Si me han dado menor
         if(nuevacarta>=anteriorcarta)
-          console.log('Bebes');
+          alert('Bebes');
         break;
       }
       if(miMazo.cartasRestantes()==0)
